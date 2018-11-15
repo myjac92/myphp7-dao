@@ -40,6 +40,32 @@ class Usuario{
       $this->setDt_cadastro(new DateTime($row['dt_cadastro']));
     }
   }
+  public static function getList(){
+    $sql = new sql();
+    return $results=$sql->select("SELECT * FROM tb_usuario ORDER BY deslogin");
+  }
+  public static function search($login){
+    $sql = new sql();
+    return $sql->select("SELECT * FROM tb_usuario WHERE deslogin LIKE :SEARCH ORDER BY deslogin",array(
+      ":SEARCH"=>"%".$login."%"
+    ));
+  }
+  public function login($login,$password){
+    $sql = new sql();
+    $results = $sql->select("SELECT * FROM tb_usuario WHERE deslogin = :LOGIN AND dessenha = :PASSWORD",array(
+      ":LOGIN"=>$login,":PASSWORD"=>$password));
+    if (isset($results[0])) {
+      $row = $results[0];
+      $this->setId_usuario($row['id_usuario']);
+      $this->setDeslogin($row['deslogin']);
+      $this->setDessenha($row['dessenha']);
+      $this->setDt_cadastro(new DateTime($row['dt_cadastro']));
+    }else {
+      throw new Exception("Login e/ou Senha invaído(s).");
+
+    }
+
+  }
   public function __toString(){
     return json_encode(array(
       "id_usuario"=>$this->getId_usuario(),
